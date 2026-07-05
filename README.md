@@ -28,7 +28,10 @@ Bootstrap/MVP. The initial implementation exposes a small set of live no-key too
 - `search_govuk` — GOV.UK Search API.
 - `search_public_datasets` — data.gov.uk CKAN package search.
 - `list_flood_warnings` / `search_flood_areas` — Environment Agency flood monitoring (England).
-- `search_ons_datasets` / `get_ons_dataset` — ONS Beta API discovery and metadata.
+- `search_ons_datasets` / `get_ons_dataset` / `get_ons_latest_version` / `get_ons_observations` — ONS Beta API.
+- `companies_house_company_profile` — optional `COMPANIES_HOUSE_API_KEY`.
+- `os_places_find_place` — optional `OS_PLACES_API_KEY`.
+- `tfl_line_status` — optional `TFL_APP_ID` + `TFL_APP_KEY`.
 
 Implementation plan: `docs/plans/2026-07-05-openuk-v1-implementation.md`. Test brief: `docs/tests/Q2-executive-report.md`.
 

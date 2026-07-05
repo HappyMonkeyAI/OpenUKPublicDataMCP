@@ -16,6 +16,8 @@ from openukpublicdata_mcp.planning import (
     format_plan_markdown,
 )
 from openukpublicdata_mcp.providers.companies_house import fetch_company_profile
+from openukpublicdata_mcp.providers.os_places import find_places
+from openukpublicdata_mcp.providers.tfl import line_status
 from openukpublicdata_mcp.sources import SOURCES, source_metadata
 from openukpublicdata_mcp.steering import cap_envelope
 
@@ -196,10 +198,45 @@ async def get_ons_dataset(dataset_id: str) -> dict[str, Any]:
 
 
 @mcp.tool
+async def get_ons_latest_version(dataset_id: str) -> dict[str, Any]:
+    """Resolve the latest ONS Beta API edition/version for a dataset."""
+    data, upstream = await ons.resolve_latest_version(dataset_id)
+    return envelope("ons_beta_api", data, upstream=upstream)
+
+
+@mcp.tool
+async def get_ons_observations(
+    dataset_id: str,
+    edition: str | None = None,
+    version: int | None = None,
+    limit: int = 20,
+) -> dict[str, Any]:
+    """Fetch ONS observations with time=*; some datasets require extra upstream dimension filters not yet exposed."""
+    limit = max(1, min(limit, 100))
+    data, upstream = await ons.get_observations(dataset_id, edition=edition, version=version, limit=limit)
+    return envelope("ons_beta_api", data, upstream=upstream)
+
+
+@mcp.tool
 async def companies_house_company_profile(company_number: str) -> dict[str, Any]:
     """Fetch Companies House company profile (requires COMPANIES_HOUSE_API_KEY)."""
     data = await fetch_company_profile(company_number)
     return envelope("companies_house", data)
+
+
+@mcp.tool
+async def os_places_find_place(query: str, limit: int = 5) -> dict[str, Any]:
+    """Find UK places or postcodes via Ordnance Survey Places (requires OS_PLACES_API_KEY)."""
+    limit = max(1, min(limit, 20))
+    data, upstream = await find_places(query, limit=limit)
+    return envelope("os_places", data, upstream=upstream)
+
+
+@mcp.tool
+async def tfl_line_status(line_ids: str | None = None) -> dict[str, Any]:
+    """London tube/DLR/tram line status via TfL Unified API (requires TFL_APP_ID and TFL_APP_KEY)."""
+    data, upstream = await line_status(line_ids=line_ids)
+    return envelope("tfl_unified", data, upstream=upstream)
 
 
 @mcp.tool
