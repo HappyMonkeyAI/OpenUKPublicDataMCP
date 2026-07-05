@@ -1,0 +1,126 @@
+{
+  "version": "1.0",
+  "tasks": {
+    "task-001": {
+      "id": "task-001",
+      "title": "Harden package and verification baseline",
+      "description": "Fix Python/runtime dependency constraints, ensure pytest/compile/FastMCP inspect/list/call pass, and update README/HERMES with exact working commands.",
+      "status": "verified",
+      "created": "2026-07-05T00:00:00Z",
+      "updated": "2026-07-05T14:34:42.833135Z",
+      "assigned_to": "hermes-bootstrap",
+      "files": [
+        "pyproject.toml",
+        "README.md",
+        "HERMES.md",
+        "tests/test_server.py"
+      ],
+      "tags": [
+        "bootstrap",
+        "verification"
+      ],
+      "notes": [
+        {
+          "agent": "hermes-bootstrap",
+          "text": "Lock acquisition: locked pyproject.toml; locked README.md; locked HERMES.md; locked tests/test_server.py",
+          "timestamp": "2026-07-05T14:34:42.805893Z"
+        }
+      ],
+      "depends_on": [],
+      "provenance": "verified"
+    },
+    "task-002": {
+      "id": "task-002",
+      "title": "Add Environment Agency flood tools",
+      "description": "Add source registry metadata, adapter/tool(s), mocked tests, and live-smoke documentation for Environment Agency flood monitoring.",
+      "status": "pending",
+      "created": "2026-07-05T00:00:00Z",
+      "updated": "2026-07-05T00:00:00Z",
+      "assigned_to": null,
+      "files": [
+        "src/openukpublicdata_mcp/sources.py",
+        "src/openukpublicdata_mcp/server.py",
+        "tests/test_server.py",
+        "README.md",
+        "research/LINKS.md"
+      ],
+      "tags": [
+        "source",
+        "environment"
+      ],
+      "notes": [],
+      "depends_on": [
+        "task-001"
+      ],
+      "provenance": "seeded"
+    },
+    "task-003": {
+      "id": "task-003",
+      "title": "Add ONS dataset search/latest tools",
+      "description": "Add ONS Beta API source, search/list/latest wrappers, tests, and docs notes.",
+      "status": "pending",
+      "created": "2026-07-05T00:00:00Z",
+      "updated": "2026-07-05T00:00:00Z",
+      "assigned_to": null,
+      "files": [
+        "src/openukpublicdata_mcp/sources.py",
+        "src/openukpublicdata_mcp/server.py",
+        "tests/test_server.py",
+        "README.md",
+        "research/github-projects/uk-ons-mcp-server.md"
+      ],
+      "tags": [
+        "source",
+        "statistics"
+      ],
+      "notes": [],
+      "depends_on": [
+        "task-001"
+      ],
+      "provenance": "seeded"
+    },
+    "task-004": {
+      "id": "task-004",
+      "title": "Design optional-key provider pattern",
+      "description": "Add ADR and docs for optional providers such as Companies House, EPC, OS, TfL, including env var naming and failure isolation rules.",
+      "status": "pending",
+      "created": "2026-07-05T00:00:00Z",
+      "updated": "2026-07-05T00:00:00Z",
+      "assigned_to": null,
+      "files": [
+        "docs/adr/0002-optional-key-providers.md",
+        "CONTEXT.md",
+        "README.md",
+        ".env.example"
+      ],
+      "tags": [
+        "architecture",
+        "credentials"
+      ],
+      "notes": [],
+      "depends_on": [],
+      "provenance": "seeded"
+    },
+    "task-005": {
+      "id": "task-005",
+      "title": "Catalogue priority UK API sources",
+      "description": "Mine GOV.UK API catalogue/data.gov.uk for high-value no-key candidates and write concise source notes with auth/licence/freshness fields.",
+      "status": "pending",
+      "created": "2026-07-05T00:00:00Z",
+      "updated": "2026-07-05T00:00:00Z",
+      "assigned_to": null,
+      "files": [
+        "research/notes/source-priority-catalogue.md",
+        "research/LINKS.md",
+        "CONTEXT.md"
+      ],
+      "tags": [
+        "research",
+        "catalogue"
+      ],
+      "notes": [],
+      "depends_on": [],
+      "provenance": "seeded"
+    }
+  }
+}

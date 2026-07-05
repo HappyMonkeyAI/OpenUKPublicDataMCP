@@ -31,7 +31,7 @@ Bootstrap/MVP. The initial implementation exposes a small set of live no-key too
 
 ```bash
 cd /home/stephen/projects/OpenUKPublicDataMCP
-python3 -m venv .venv
+python3.11 -m venv .venv
 . .venv/bin/activate
 pip install -e '.[dev]'
 python -m openukpublicdata_mcp.server
@@ -43,7 +43,7 @@ Run validation:
 pytest
 fastmcp inspect src/openukpublicdata_mcp/server.py:mcp
 fastmcp list src/openukpublicdata_mcp/server.py --json
-fastmcp call src/openukpublicdata_mcp/server.py lookup_postcode '{"postcode":"SW1A 1AA"}' --json
+fastmcp call src/openukpublicdata_mcp/server.py lookup_postcode postcode='SW1A 1AA' --json
 ```
 
 ## Hermes MCP config

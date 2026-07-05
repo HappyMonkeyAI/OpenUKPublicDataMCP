@@ -5,8 +5,8 @@ from urllib.parse import quote
 
 from fastmcp import FastMCP
 
-from .http import get_json, utc_now_iso
-from .sources import SOURCES, source_metadata
+from openukpublicdata_mcp.http import get_json, utc_now_iso
+from openukpublicdata_mcp.sources import SOURCES, source_metadata
 
 mcp = FastMCP(
     "OpenUKPublicDataMCP",
