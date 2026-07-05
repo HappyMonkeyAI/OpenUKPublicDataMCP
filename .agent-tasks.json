@@ -121,6 +121,64 @@
       "notes": [],
       "depends_on": [],
       "provenance": "seeded"
+    },
+    "task-006": {
+      "id": "task-006",
+      "title": "ONS latest version and observations tools",
+      "description": "Extend adapters/ons.py with edition/version resolution and observations; MCP tools + tests (task-006).",
+      "status": "in_progress",
+      "created": "2026-07-05T15:10:06.607753Z",
+      "updated": "2026-07-05T15:10:36.403240Z",
+      "assigned_to": "codex-lane",
+      "files": [
+        "src/openukpublicdata_mcp/adapters/ons.py",
+        "src/openukpublicdata_mcp/server.py",
+        "tests/test_server.py",
+        "src/openukpublicdata_mcp/planning.py",
+        "docs/tests/live-smoke-commands.md"
+      ],
+      "tags": [
+        "ons",
+        "statistics"
+      ],
+      "notes": [
+        {
+          "agent": "codex-lane",
+          "text": "Lock acquisition: locked src/openukpublicdata_mcp/adapters/ons.py; locked src/openukpublicdata_mcp/server.py; locked tests/test_server.py; locked src/openukpublicdata_mcp/planning.py; locked docs/tests/live-smoke-commands.md",
+          "timestamp": "2026-07-05T15:10:36.403240Z"
+        }
+      ],
+      "depends_on": [],
+      "provenance": "seeded"
+    },
+    "task-007": {
+      "id": "task-007",
+      "title": "OS Places and TfL optional-key providers",
+      "description": "ADR 0002 providers for OS Places and TfL line status; auth_required without keys (task-007).",
+      "status": "in_progress",
+      "created": "2026-07-05T15:10:06.635674Z",
+      "updated": "2026-07-05T15:10:36.689612Z",
+      "assigned_to": "agy-lane",
+      "files": [
+        "src/openukpublicdata_mcp/providers/os_places.py",
+        "src/openukpublicdata_mcp/providers/tfl.py",
+        "src/openukpublicdata_mcp/server.py",
+        "tests/test_providers.py",
+        "README.md"
+      ],
+      "tags": [
+        "optional-key",
+        "transport"
+      ],
+      "notes": [
+        {
+          "agent": "agy-lane",
+          "text": "Lock acquisition: locked src/openukpublicdata_mcp/providers/os_places.py; locked src/openukpublicdata_mcp/providers/tfl.py; lock failed for src/openukpublicdata_mcp/server.py: \u274c LOCK FAILED: src/openukpublicdata_mcp/server.py is locked by codex-lane since 2026-07-05T15:10:36.206642Z\n   Task: task task-006: ONS latest version and observations tools; locked tests/test_providers.py; locked README.md",
+          "timestamp": "2026-07-05T15:10:36.689612Z"
+        }
+      ],
+      "depends_on": [],
+      "provenance": "seeded"
     }
   }
 }
