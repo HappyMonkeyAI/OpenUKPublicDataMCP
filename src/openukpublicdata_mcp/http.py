@@ -16,9 +16,17 @@ class UpstreamError(RuntimeError):
     pass
 
 
-async def get_json(url: str, *, params: dict[str, Any] | None = None, timeout: float = 20.0) -> Any:
-    headers = {"User-Agent": USER_AGENT, "Accept": "application/json"}
-    async with httpx.AsyncClient(timeout=timeout, follow_redirects=True, headers=headers) as client:
+async def get_json(
+    url: str,
+    *,
+    params: dict[str, Any] | None = None,
+    headers: dict[str, str] | None = None,
+    timeout: float = 20.0,
+) -> Any:
+    base_headers = {"User-Agent": USER_AGENT, "Accept": "application/json"}
+    if headers:
+        base_headers.update(headers)
+    async with httpx.AsyncClient(timeout=timeout, follow_redirects=True, headers=base_headers) as client:
         try:
             response = await client.get(url, params=params)
             response.raise_for_status()

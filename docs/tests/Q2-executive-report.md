@@ -103,6 +103,21 @@ The UK entered the second quarter of 2026 with **modest growth momentum from Q1*
 
 ---
 
+## 8. ONS dataset discovery (MCP — post task-003)
+
+`search_ons_datasets` for *“consumer price inflation”* surfaces official dataset IDs (e.g. **cpih01**). `get_ons_dataset` returns **release_frequency**, **last_updated**, and **links** to editions/versions for agent-driven time-series pulls (observations tool planned next).
+
+**Example workflow:**
+
+```bash
+fastmcp call src/openukpublicdata_mcp/server.py:mcp search_ons_datasets query='GDP' limit=5 --json
+fastmcp call src/openukpublicdata_mcp/server.py:mcp get_ons_dataset dataset_id='cpih01' --json
+```
+
+**Source:** ONS Beta API via OpenUKPublicDataMCP.
+
+---
+
 ## MCP test verdict
 
 | Check | Result |
@@ -110,9 +125,10 @@ The UK entered the second quarter of 2026 with **modest growth momentum from Q1*
 | `search_govuk` | OK — surfaced ONS/GOV.UK releases |
 | `search_public_datasets` | OK — dataset discovery at scale |
 | `get_carbon_intensity` | OK — live envelope with source metadata |
-| Quarterly macro synthesis | **Partial** — still relies on GOV.UK search + manual ONS follow-up |
+| `search_ons_datasets` / `get_ons_dataset` | OK — official dataset IDs + metadata (reduces search-only macro gap) |
+| Quarterly macro synthesis | **Improved** — use ONS tools for dataset IDs; **observations** endpoint still backlog |
 
-**Recommended build priority:** first-class **ONS Beta API** tools (`task-003`) so period briefs like this are generated from time-series endpoints, not search snippets.
+**Recommended build priority:** `get_ons_observations` (or latest edition/version helper) so CPI/GDP series land in one tool call.
 
 ---
 

@@ -8,12 +8,14 @@ from urllib.parse import quote
 
 from fastmcp import FastMCP
 
+from openukpublicdata_mcp.adapters import ea_flood, ons
 from openukpublicdata_mcp.http import get_json, utc_now_iso
 from openukpublicdata_mcp.planning import (
     METHODOLOGY_MD,
     build_research_plan,
     format_plan_markdown,
 )
+from openukpublicdata_mcp.providers.companies_house import fetch_company_profile
 from openukpublicdata_mcp.sources import SOURCES, source_metadata
 from openukpublicdata_mcp.steering import cap_envelope
 
@@ -166,106 +168,38 @@ async def search_public_datasets(query: str, limit: int = 5) -> dict[str, Any]:
 async def list_flood_warnings(limit: int = 10) -> dict[str, Any]:
     """List current Environment Agency flood warnings (England)."""
     limit = max(1, min(limit, 50))
-    payload = await get_json(
-        "https://environment.data.gov.uk/flood-monitoring/id/floods",
-        params={"_limit": limit},
-    )
-    items = []
-    for item in payload.get("items", [])[:limit]:
-        area = item.get("floodArea") or {}
-        items.append(
-            {
-                "id": item.get("@id"),
-                "severity": item.get("severity"),
-                "severity_level": item.get("severityLevel"),
-                "description": item.get("description"),
-                "message": item.get("message"),
-                "time_raised": item.get("timeRaised"),
-                "flood_area": area.get("notation") or area.get("label"),
-                "county": area.get("county"),
-                "river": area.get("riverOrSea"),
-            }
-        )
-    return envelope(
-        "ea_flood_monitoring",
-        {"count": len(items), "warnings": items},
-        upstream={"meta": payload.get("meta")},
-    )
+    data, upstream = await ea_flood.list_warnings(limit)
+    return envelope("ea_flood_monitoring", data, upstream=upstream)
 
 
 @mcp.tool
 async def search_flood_areas(query: str, limit: int = 5) -> dict[str, Any]:
     """Search Environment Agency flood monitoring areas by name or river."""
     limit = max(1, min(limit, 20))
-    payload = await get_json(
-        "https://environment.data.gov.uk/flood-monitoring/id/floodAreas",
-        params={"search": query, "_limit": limit},
-    )
-    areas = []
-    for item in payload.get("items", [])[:limit]:
-        areas.append(
-            {
-                "id": item.get("@id"),
-                "notation": item.get("notation"),
-                "label": item.get("label"),
-                "county": item.get("county"),
-                "river_or_sea": item.get("riverOrSea"),
-                "lat": item.get("lat"),
-                "long": item.get("long"),
-            }
-        )
-    return envelope(
-        "ea_flood_monitoring",
-        {"query": query, "count": len(areas), "areas": areas},
-        upstream={"meta": payload.get("meta")},
-    )
+    data, upstream = await ea_flood.search_areas(query, limit)
+    return envelope("ea_flood_monitoring", data, upstream=upstream)
 
 
 @mcp.tool
 async def search_ons_datasets(query: str, limit: int = 10) -> dict[str, Any]:
     """Search ONS Beta API datasets by keyword."""
     limit = max(1, min(limit, 50))
-    payload = await get_json(
-        "https://api.beta.ons.gov.uk/v1/search",
-        params={"q": query, "size": limit},
-    )
-    items = payload.get("items", [])[:limit]
-    datasets = []
-    for item in items:
-        datasets.append(
-            {
-                "id": item.get("id"),
-                "title": item.get("title"),
-                "description": item.get("description"),
-                "release_date": item.get("release_date"),
-                "last_updated": item.get("last_updated"),
-                "url": f"https://www.ons.gov.uk/datasets/{item.get('id')}" if item.get("id") else None,
-            }
-        )
-    return envelope(
-        "ons_beta_api",
-        {"query": query, "count": len(datasets), "datasets": datasets},
-        upstream={"count": payload.get("count")},
-    )
+    data, upstream = await ons.search_datasets(query, limit)
+    return envelope("ons_beta_api", data, upstream=upstream)
 
 
 @mcp.tool
 async def get_ons_dataset(dataset_id: str) -> dict[str, Any]:
     """Fetch ONS dataset metadata (release frequency, editions, links)."""
-    cleaned = dataset_id.strip()
-    payload = await get_json(f"https://api.beta.ons.gov.uk/v1/datasets/{quote(cleaned)}")
-    data = {
-        "id": payload.get("id"),
-        "title": payload.get("title"),
-        "description": payload.get("description"),
-        "release_frequency": payload.get("release_frequency"),
-        "last_updated": payload.get("last_updated"),
-        "next_release": payload.get("next_release"),
-        "keywords": payload.get("keywords"),
-        "contacts": payload.get("contacts"),
-        "links": payload.get("links"),
-    }
-    return envelope("ons_beta_api", data, upstream={"id": payload.get("id")})
+    data, upstream = await ons.get_dataset(dataset_id)
+    return envelope("ons_beta_api", data, upstream=upstream)
+
+
+@mcp.tool
+async def companies_house_company_profile(company_number: str) -> dict[str, Any]:
+    """Fetch Companies House company profile (requires COMPANIES_HOUSE_API_KEY)."""
+    data = await fetch_company_profile(company_number)
+    return envelope("companies_house", data)
 
 
 @mcp.tool

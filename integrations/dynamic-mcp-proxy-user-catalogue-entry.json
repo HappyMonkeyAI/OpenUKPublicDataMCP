@@ -1,7 +1,7 @@
 [
   {
     "name": "openuk_public_data",
-    "description": "No-key-first UK public data MCP — GOV.UK, data.gov.uk, postcodes, carbon intensity, planning tools",
+    "description": "No-key-first UK public data MCP — GOV.UK, data.gov.uk, postcodes, carbon intensity, ONS, flood, planning tools",
     "command": "uv",
     "args": [
       "run",
@@ -25,7 +25,10 @@
       "mcp"
     ],
     "runtime": "stdio",
-    "env_vars": [],
+    "env_vars": [
+      "COMPANIES_HOUSE_API_KEY",
+      "UK_RESEARCH_ROOT"
+    ],
     "pick": [
       "data",
       "source",
