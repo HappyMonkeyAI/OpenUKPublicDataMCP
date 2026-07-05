@@ -252,6 +252,13 @@ async def api_weather_by_postcode(
 if WEB_DIST.is_dir():
     app.mount("/assets", StaticFiles(directory=WEB_DIST / "assets"), name="assets")
 
+    @app.get("/")
+    async def serve_root() -> FileResponse:
+        index = WEB_DIST / "index.html"
+        if index.is_file():
+            return FileResponse(index)
+        raise HTTPException(status_code=404, detail="web_build_missing")
+
     @app.get("/{full_path:path}")
     async def spa_fallback(full_path: str) -> FileResponse:
         if full_path.startswith("api/"):
