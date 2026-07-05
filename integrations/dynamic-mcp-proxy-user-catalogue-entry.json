@@ -1,0 +1,38 @@
+[
+  {
+    "name": "openuk_public_data",
+    "description": "No-key-first UK public data MCP — GOV.UK, data.gov.uk, postcodes, carbon intensity, planning tools",
+    "command": "uv",
+    "args": [
+      "run",
+      "--quiet",
+      "--project",
+      "/home/stephen/projects/OpenUKPublicDataMCP",
+      "openukpublicdata-mcp"
+    ],
+    "tags": [
+      "uk",
+      "government",
+      "public-data",
+      "research",
+      "statistics",
+      "openuk"
+    ],
+    "tech_stack": [
+      "python",
+      "fastmcp",
+      "uk",
+      "mcp"
+    ],
+    "runtime": "stdio",
+    "env_vars": [],
+    "pick": [
+      "data",
+      "source",
+      "retrieved_at",
+      "brief_markdown",
+      "plan_markdown"
+    ],
+    "token_budget": 12000
+  }
+]

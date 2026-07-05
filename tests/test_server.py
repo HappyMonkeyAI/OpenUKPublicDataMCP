@@ -1,13 +1,22 @@
 import respx
 from httpx import Response
 
-from openukpublicdata_mcp.server import health_check, list_sources, lookup_postcode, search_govuk
+from openukpublicdata_mcp.server import (
+    get_ons_dataset,
+    health_check,
+    list_flood_warnings,
+    list_sources,
+    lookup_postcode,
+    search_flood_areas,
+    search_govuk,
+    search_ons_datasets,
+)
 
 
 def test_health_check():
     result = health_check()
     assert result["status"] == "ok"
-    assert result["source_count"] >= 5
+    assert result["source_count"] >= 7
 
 
 def test_list_sources_filters_none():

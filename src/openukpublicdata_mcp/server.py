@@ -1,18 +1,28 @@
 from __future__ import annotations
 
+import os
+import re
+from pathlib import Path
 from typing import Any, Literal
 from urllib.parse import quote
 
 from fastmcp import FastMCP
 
 from openukpublicdata_mcp.http import get_json, utc_now_iso
+from openukpublicdata_mcp.planning import (
+    METHODOLOGY_MD,
+    build_research_plan,
+    format_plan_markdown,
+)
 from openukpublicdata_mcp.sources import SOURCES, source_metadata
+from openukpublicdata_mcp.steering import cap_envelope
 
 mcp = FastMCP(
     "OpenUKPublicDataMCP",
     instructions=(
-        "Use this server for high-value UK public data. Prefer no-key tools first. "
-        "Every response includes source metadata for citation and freshness checks."
+        "UK public data MCP. Start with list_sources(auth='none') and plan_uk_public_data_research "
+        "before broad discovery. Prefer no-key tools. Every tool response includes source metadata "
+        "for citation; preserve source and retrieved_at in summaries."
     ),
 )
 
@@ -25,7 +35,12 @@ def envelope(source_id: str, data: Any, *, upstream: Any | None = None) -> dict[
     }
     if upstream is not None:
         result["upstream"] = upstream
-    return result
+    return cap_envelope(result)
+
+
+def _slugify(topic: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", topic.lower()).strip("-")
+    return slug[:48] or "topic"
 
 
 @mcp.tool
@@ -145,6 +160,153 @@ async def search_public_datasets(query: str, limit: int = 5) -> dict[str, Any]:
         {"query": query, "total": result.get("count"), "results": datasets},
         upstream={"success": payload.get("success"), "count": result.get("count")},
     )
+
+
+@mcp.tool
+async def list_flood_warnings(limit: int = 10) -> dict[str, Any]:
+    """List current Environment Agency flood warnings (England)."""
+    limit = max(1, min(limit, 50))
+    payload = await get_json(
+        "https://environment.data.gov.uk/flood-monitoring/id/floods",
+        params={"_limit": limit},
+    )
+    items = []
+    for item in payload.get("items", [])[:limit]:
+        area = item.get("floodArea") or {}
+        items.append(
+            {
+                "id": item.get("@id"),
+                "severity": item.get("severity"),
+                "severity_level": item.get("severityLevel"),
+                "description": item.get("description"),
+                "message": item.get("message"),
+                "time_raised": item.get("timeRaised"),
+                "flood_area": area.get("notation") or area.get("label"),
+                "county": area.get("county"),
+                "river": area.get("riverOrSea"),
+            }
+        )
+    return envelope(
+        "ea_flood_monitoring",
+        {"count": len(items), "warnings": items},
+        upstream={"meta": payload.get("meta")},
+    )
+
+
+@mcp.tool
+async def search_flood_areas(query: str, limit: int = 5) -> dict[str, Any]:
+    """Search Environment Agency flood monitoring areas by name or river."""
+    limit = max(1, min(limit, 20))
+    payload = await get_json(
+        "https://environment.data.gov.uk/flood-monitoring/id/floodAreas",
+        params={"search": query, "_limit": limit},
+    )
+    areas = []
+    for item in payload.get("items", [])[:limit]:
+        areas.append(
+            {
+                "id": item.get("@id"),
+                "notation": item.get("notation"),
+                "label": item.get("label"),
+                "county": item.get("county"),
+                "river_or_sea": item.get("riverOrSea"),
+                "lat": item.get("lat"),
+                "long": item.get("long"),
+            }
+        )
+    return envelope(
+        "ea_flood_monitoring",
+        {"query": query, "count": len(areas), "areas": areas},
+        upstream={"meta": payload.get("meta")},
+    )
+
+
+@mcp.tool
+async def search_ons_datasets(query: str, limit: int = 10) -> dict[str, Any]:
+    """Search ONS Beta API datasets by keyword."""
+    limit = max(1, min(limit, 50))
+    payload = await get_json(
+        "https://api.beta.ons.gov.uk/v1/search",
+        params={"q": query, "size": limit},
+    )
+    items = payload.get("items", [])[:limit]
+    datasets = []
+    for item in items:
+        datasets.append(
+            {
+                "id": item.get("id"),
+                "title": item.get("title"),
+                "description": item.get("description"),
+                "release_date": item.get("release_date"),
+                "last_updated": item.get("last_updated"),
+                "url": f"https://www.ons.gov.uk/datasets/{item.get('id')}" if item.get("id") else None,
+            }
+        )
+    return envelope(
+        "ons_beta_api",
+        {"query": query, "count": len(datasets), "datasets": datasets},
+        upstream={"count": payload.get("count")},
+    )
+
+
+@mcp.tool
+async def get_ons_dataset(dataset_id: str) -> dict[str, Any]:
+    """Fetch ONS dataset metadata (release frequency, editions, links)."""
+    cleaned = dataset_id.strip()
+    payload = await get_json(f"https://api.beta.ons.gov.uk/v1/datasets/{quote(cleaned)}")
+    data = {
+        "id": payload.get("id"),
+        "title": payload.get("title"),
+        "description": payload.get("description"),
+        "release_frequency": payload.get("release_frequency"),
+        "last_updated": payload.get("last_updated"),
+        "next_release": payload.get("next_release"),
+        "keywords": payload.get("keywords"),
+        "contacts": payload.get("contacts"),
+        "links": payload.get("links"),
+    }
+    return envelope("ons_beta_api", data, upstream={"id": payload.get("id")})
+
+
+@mcp.tool
+def plan_uk_public_data_research(
+    topic: str,
+    depth: Literal["quick", "standard", "deep"] = "standard",
+    period: str | None = None,
+) -> dict[str, Any]:
+    """Return a structured research plan (tool order, depth, suggested output) for UK public-data questions."""
+    plan = build_research_plan(topic, depth=depth, period=period)
+    plan["plan_markdown"] = format_plan_markdown(plan)
+    return plan
+
+
+@mcp.tool
+def get_research_methodology() -> str:
+    """Methodology for no-key-first UK public data research and citation rules."""
+    return METHODOLOGY_MD
+
+
+@mcp.tool
+def save_uk_research_note(
+    topic: str,
+    content_markdown: str,
+    slug: str | None = None,
+    filename: str = "UK_PUBLIC_DATA_BRIEF.md",
+) -> dict[str, Any]:
+    """Persist a research brief under ~/research/<slug>/ (or UK_RESEARCH_ROOT)."""
+    research_root = Path(os.environ.get("UK_RESEARCH_ROOT", Path.home() / "research"))
+    use_slug = slug or _slugify(topic)
+    out_dir = (research_root / use_slug).resolve()
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / filename
+    header = f"# {topic}\n\n_Saved by OpenUKPublicDataMCP_\n\n"
+    out_path.write_text(header + content_markdown.strip() + "\n", encoding="utf-8")
+    return {"path": str(out_path), "slug": use_slug, "bytes": out_path.stat().st_size}
+
+
+@mcp.resource("openuk://methodology")
+async def methodology_resource() -> str:
+    return METHODOLOGY_MD
 
 
 def main() -> None:

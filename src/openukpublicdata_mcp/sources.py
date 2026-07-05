@@ -74,6 +74,26 @@ SOURCES: dict[str, Source] = {
         coverage="Great Britain electricity carbon intensity",
         licence="See upstream terms",
     ),
+    "ea_flood_monitoring": Source(
+        id="ea_flood_monitoring",
+        name="Environment Agency flood monitoring",
+        base_url="https://environment.data.gov.uk/flood-monitoring",
+        docs_url="https://environment.data.gov.uk/flood-monitoring/doc/reference",
+        official=True,
+        auth="none",
+        coverage="England flood warnings, areas, and river levels",
+        licence="Open Government Licence",
+    ),
+    "ons_beta_api": Source(
+        id="ons_beta_api",
+        name="ONS Beta API",
+        base_url="https://api.beta.ons.gov.uk/v1",
+        docs_url="https://developer.beta.ons.gov.uk/",
+        official=True,
+        auth="none",
+        coverage="ONS datasets, editions, versions, and search",
+        licence="Open Government Licence",
+    ),
 }
 
 
