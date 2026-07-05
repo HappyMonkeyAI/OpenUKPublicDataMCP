@@ -41,6 +41,13 @@ fastmcp call $MCP list_flood_warnings limit=5 --json
 fastmcp call $MCP search_flood_areas query='Thames' limit=3 --json
 ```
 
+## Planning (post task-009)
+
+```bash
+fastmcp call $MCP search_planning_applications limit=3 --json
+fastmcp call $MCP search_planning_applications reference='23/00002/FUL' limit=1 --json
+```
+
 ## Optional key
 
 ```bash

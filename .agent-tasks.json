@@ -126,9 +126,9 @@
       "id": "task-006",
       "title": "ONS latest version and observations tools",
       "description": "Extend adapters/ons.py with edition/version resolution and observations; MCP tools + tests (task-006).",
-      "status": "in_progress",
+      "status": "verified",
       "created": "2026-07-05T15:10:06.607753Z",
-      "updated": "2026-07-05T15:10:36.403240Z",
+      "updated": "2026-07-05T15:15:12.908067Z",
       "assigned_to": "codex-lane",
       "files": [
         "src/openukpublicdata_mcp/adapters/ons.py",
@@ -149,15 +149,15 @@
         }
       ],
       "depends_on": [],
-      "provenance": "seeded"
+      "provenance": "verified"
     },
     "task-007": {
       "id": "task-007",
       "title": "OS Places and TfL optional-key providers",
       "description": "ADR 0002 providers for OS Places and TfL line status; auth_required without keys (task-007).",
-      "status": "in_progress",
+      "status": "verified",
       "created": "2026-07-05T15:10:06.635674Z",
-      "updated": "2026-07-05T15:10:36.689612Z",
+      "updated": "2026-07-05T15:15:02.919750Z",
       "assigned_to": "agy-lane",
       "files": [
         "src/openukpublicdata_mcp/providers/os_places.py",
@@ -178,7 +178,62 @@
         }
       ],
       "depends_on": [],
-      "provenance": "seeded"
+      "provenance": "verified"
+    },
+    "task-008": {
+      "id": "task-008",
+      "title": "Refresh Q2 Executive Reports",
+      "description": "Update the executive test reports (report 1, 2, 3 and the Q2 narrative report) using live ONS observations, postcode regional framing, and updated tool integration status.",
+      "status": "verified",
+      "created": "2026-07-05T15:25:21.068209Z",
+      "updated": "2026-07-05T15:25:27.245318Z",
+      "assigned_to": "antigravity",
+      "files": [
+        "docs/tests/Q2-executive-report.md",
+        "docs/tests/exec-01-quarterly-uk-public-data-pulse.md",
+        "docs/tests/exec-02-cost-of-living-inflation-snapshot.md",
+        "docs/tests/exec-03-climate-resilience-ops-brief.md"
+      ],
+      "tags": [
+        "docs",
+        "reports"
+      ],
+      "notes": "Refreshed Q2 + exec-01 with live ONS observations, postcode regional framing, planning tool note.",
+      "depends_on": [],
+      "provenance": "verified",
+      "completed_at": "2026-07-05T15:32:30.896288+00:00",
+      "verified_at": "2026-07-05T15:32:30.896288+00:00",
+      "completed_by": "hermes-lane",
+      "verified_by": "hermes-lane"
+    },
+    "task-009": {
+      "id": "task-009",
+      "title": "Planning.data.gov.uk search_planning_applications",
+      "description": "Adapter + MCP tool for England planning applications API.",
+      "status": "verified",
+      "created_at": "2026-07-05T15:32:30.896288+00:00",
+      "created_by": "hermes-lane",
+      "claimed_by": "hermes-lane",
+      "claimed_at": "2026-07-05T15:32:30.896288+00:00",
+      "completed_at": "2026-07-05T15:32:30.896288+00:00",
+      "completed_by": "hermes-lane",
+      "verified_at": "2026-07-05T15:32:30.896288+00:00",
+      "verified_by": "hermes-lane",
+      "provenance": "verified",
+      "files": [
+        "src/openukpublicdata_mcp/adapters/planning_data.py",
+        "src/openukpublicdata_mcp/server.py",
+        "src/openukpublicdata_mcp/sources.py",
+        "tests/test_server.py",
+        "docs/tests/live-smoke-commands.md",
+        ".hermes/prompts/task-009-planning-data-gov-uk.md"
+      ],
+      "tags": [
+        "planning",
+        "mcp",
+        "tier-a"
+      ],
+      "notes": "20 MCP tools; 24 pytest passed."
     }
   }
 }

@@ -12,6 +12,7 @@ from openukpublicdata_mcp.server import (
     search_flood_areas,
     search_govuk,
     search_ons_datasets,
+    search_planning_applications,
 )
 
 
@@ -248,3 +249,28 @@ async def test_get_ons_observations_auto_resolves_latest_and_limits_results():
     assert result["data"]["query"] == {"time": "*"}
     assert result["data"]["count"] == 1
     assert result["data"]["observations"][0]["observation"] == "131.4"
+
+
+@respx.mock
+async def test_search_planning_applications_envelope():
+    respx.get("https://www.planning.data.gov.uk/entity.json").mock(
+        return_value=Response(
+            200,
+            json={
+                "count": 1,
+                "entities": [
+                    {
+                        "entity": 10000000000,
+                        "reference": "23/00002/FUL",
+                        "description": "Single storey extension",
+                        "decision-date": "2023-05-09",
+                        "dataset": "planning-application",
+                    }
+                ],
+            },
+        )
+    )
+    result = await search_planning_applications(limit=1)
+    assert result["data"]["applications"][0]["reference"] == "23/00002/FUL"
+    assert result["source"]["id"] == "planning_data_gov_uk"
+    assert result["retrieved_at"]

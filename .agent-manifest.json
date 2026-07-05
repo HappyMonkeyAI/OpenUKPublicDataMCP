@@ -1,71 +1,11 @@
 {
   "version": "1.0",
-  "locks": {
-    "src/openukpublicdata_mcp/adapters/ons.py": {
-      "agent_id": "codex-lane",
-      "task": "task-006",
-      "acquired": "2026-07-05T15:10:36.718151Z",
-      "heartbeat": "2026-07-05T15:10:36.718151Z"
-    },
-    "src/openukpublicdata_mcp/server.py": {
-      "agent_id": "codex-lane",
-      "task": "task-006",
-      "acquired": "2026-07-05T15:10:36.718151Z",
-      "heartbeat": "2026-07-05T15:10:36.718151Z"
-    },
-    "tests/test_server.py": {
-      "agent_id": "codex-lane",
-      "task": "task-006",
-      "acquired": "2026-07-05T15:10:36.718151Z",
-      "heartbeat": "2026-07-05T15:10:36.718151Z"
-    },
-    "src/openukpublicdata_mcp/planning.py": {
-      "agent_id": "codex-lane",
-      "task": "task task-006: ONS latest version and observations tools",
-      "acquired": "2026-07-05T15:10:36.317052Z",
-      "heartbeat": "2026-07-05T15:10:36.317052Z"
-    },
-    "docs/tests/live-smoke-commands.md": {
-      "agent_id": "codex-lane",
-      "task": "task task-006: ONS latest version and observations tools",
-      "acquired": "2026-07-05T15:10:36.371711Z",
-      "heartbeat": "2026-07-05T15:10:36.371711Z"
-    },
-    "src/openukpublicdata_mcp/providers/os_places.py": {
-      "agent_id": "agy-lane",
-      "task": "task-007",
-      "acquired": "2026-07-05T15:10:36.777808Z",
-      "heartbeat": "2026-07-05T15:10:36.777808Z"
-    },
-    "src/openukpublicdata_mcp/providers/tfl.py": {
-      "agent_id": "agy-lane",
-      "task": "task-007",
-      "acquired": "2026-07-05T15:10:36.777808Z",
-      "heartbeat": "2026-07-05T15:10:36.777808Z"
-    },
-    "tests/test_providers.py": {
-      "agent_id": "agy-lane",
-      "task": "task-007",
-      "acquired": "2026-07-05T15:10:36.777808Z",
-      "heartbeat": "2026-07-05T15:10:36.777808Z"
-    },
-    "README.md": {
-      "agent_id": "agy-lane",
-      "task": "task task-007: OS Places and TfL optional-key providers",
-      "acquired": "2026-07-05T15:10:36.654467Z",
-      "heartbeat": "2026-07-05T15:10:36.654467Z"
-    }
-  },
+  "locks": {},
   "agents": {
-    "codex-lane": {
-      "name": "codex-lane",
-      "first_seen": "2026-07-05T15:10:36.718151Z",
-      "last_heartbeat": "2026-07-05T15:10:36.718151Z"
-    },
-    "agy-lane": {
-      "name": "agy-lane",
-      "first_seen": "2026-07-05T15:10:36.777808Z",
-      "last_heartbeat": "2026-07-05T15:10:36.777808Z"
+    "antigravity": {
+      "name": "antigravity",
+      "first_seen": "2026-07-05T15:25:27.278571Z",
+      "last_heartbeat": "2026-07-05T15:25:27.278571Z"
     }
   }
 }

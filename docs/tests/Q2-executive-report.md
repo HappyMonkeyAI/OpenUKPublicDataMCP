@@ -1,7 +1,7 @@
 # UK Public Data — Q2 2026 Executive Snapshot (Test Brief)
 
-**Prepared:** 5 July 2026  
-**Method:** OpenUKPublicDataMCP smoke test + official source verification (GOV.UK, ONS, data.gov.uk, Carbon Intensity API)  
+**Prepared:** 5 July 2026 (refreshed 15:30 UTC)  
+**Method:** OpenUKPublicDataMCP live MCP envelopes + official source verification (GOV.UK, ONS, data.gov.uk, Carbon Intensity API)  
 **Scope note:** As of this date, many “Q2 2026” headline statistics are not yet published as full-quarter releases. This brief uses the latest official figures available for April–June 2026 and Q1 2026 where Q2 aggregates are pending.
 
 ---
@@ -74,8 +74,9 @@ The UK entered the second quarter of 2026 with **modest growth momentum from Q1*
 
 | Field | Value |
 |-------|-------|
-| Period | 2026-07-05 14:00–14:30 UTC |
-| Actual intensity | **62 gCO₂/kWh** |
+| Period | 2026-07-05 14:30–15:00 UTC |
+| Actual intensity | **72 gCO₂/kWh** |
+| Forecast | 58 gCO₂/kWh |
 | Index | **low** |
 
 **Q2 2026 aggregate (Carbon Intensity API, half-hourly series):**
@@ -103,18 +104,40 @@ The UK entered the second quarter of 2026 with **modest growth momentum from Q1*
 
 ---
 
-## 8. ONS dataset discovery (MCP — post task-003)
+## 8. ONS time series (MCP — task-006)
 
-`search_ons_datasets` for *“consumer price inflation”* surfaces official dataset IDs (e.g. **cpih01**). `get_ons_dataset` returns **release_frequency**, **last_updated**, and **links** to editions/versions for agent-driven time-series pulls (observations tool planned next).
+`get_ons_latest_version('cpih01')` → **version 67**, release **2026-02-18**.  
+`get_ons_observations('cpih01', limit=5)` → **457** observations in series (UK aggregate **CP00**); sample index levels include **Jul-24: 132.9**, **Mar-24: 131.6**.
 
-**Example workflow:**
+**Workflow:**
 
 ```bash
-fastmcp call src/openukpublicdata_mcp/server.py:mcp search_ons_datasets query='GDP' limit=5 --json
-fastmcp call src/openukpublicdata_mcp/server.py:mcp get_ons_dataset dataset_id='cpih01' --json
+fastmcp call src/openukpublicdata_mcp/server.py get_ons_latest_version dataset_id=cpih01
+fastmcp call src/openukpublicdata_mcp/server.py get_ons_observations dataset_id=cpih01 limit=5
 ```
 
-**Source:** ONS Beta API via OpenUKPublicDataMCP.
+**Source:** ONS Beta API via OpenUKPublicDataMCP — **retrieved 2026-07-05T15:29:49Z**.
+
+---
+
+## 9. Regional framing (`lookup_postcode`)
+
+Postcode lookup anchors exec briefs to **official geography labels** (not regional CPI/GDP splits unless you add ONS dimension filters).
+
+| Postcode | Region | District | Constituency |
+|----------|--------|----------|--------------|
+| **SW1A 1AA** | London | Westminster | Cities of London and Westminster |
+| **M1 1AE** | North West | Manchester | Manchester Central |
+
+**Tool:** `lookup_postcode` — postcodes.io — **retrieved 2026-07-05T15:29:49Z**.
+
+---
+
+## 10. Planning data (MCP — task-009)
+
+`search_planning_applications` queries **planning.data.gov.uk** (`planning-application` dataset). Platform reports **100k+** applications nationally; use `reference` filter for precise lookups.
+
+**Source:** MHCLG Planning Data API — Open Government Licence.
 
 ---
 
@@ -122,13 +145,16 @@ fastmcp call src/openukpublicdata_mcp/server.py:mcp get_ons_dataset dataset_id='
 
 | Check | Result |
 |-------|--------|
-| `search_govuk` | OK — surfaced ONS/GOV.UK releases |
-| `search_public_datasets` | OK — dataset discovery at scale |
-| `get_carbon_intensity` | OK — live envelope with source metadata |
-| `search_ons_datasets` / `get_ons_dataset` | OK — official dataset IDs + metadata (reduces search-only macro gap) |
-| Quarterly macro synthesis | **Improved** — use ONS tools for dataset IDs; **observations** endpoint still backlog |
+| `search_govuk` | OK |
+| `search_public_datasets` | OK |
+| `get_carbon_intensity` | OK — live envelope |
+| `search_ons_datasets` / `get_ons_dataset` | OK |
+| `get_ons_latest_version` / `get_ons_observations` | OK — CPIH v67 + observations |
+| `lookup_postcode` | OK — regional framing |
+| `search_planning_applications` | OK — England planning API |
+| Quarterly macro synthesis | **Good** — combine bulletin headlines (§2) with API series (§8) |
 
-**Recommended build priority:** `get_ons_observations` (or latest edition/version helper) so CPI/GDP series land in one tool call.
+**Next build priority:** ONS % change helper; postcode→planning geography filters when API supports them.
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Template:** Quarterly macro + official-data signals  
 **Period focus:** Q2 2026 (with Q1 carry-over where Q2 aggregates pending)  
-**Generated:** 5 July 2026 (UTC)  
+**Generated:** 5 July 2026 (refreshed 15:30 UTC)  
 **Engine:** OpenUKPublicDataMCP — live tool envelopes cited below
 
 ---
@@ -64,7 +64,18 @@ UK public-data feeds available **without API keys** now support a **repeatable q
 
 ---
 
-## 4. Official narrative & catalogue
+## 4. Regional anchors (`lookup_postcode`)
+
+| Postcode | Region | Use in briefs |
+|----------|--------|----------------|
+| SW1A 1AA | London / Westminster | Policy & national narrative |
+| M1 1AE | North West / Manchester | Regional contrast (labour, retail footfall context) |
+
+**Tool:** `lookup_postcode` — retrieved **2026-07-05T15:29:49Z**.
+
+---
+
+## 5. Official narrative & catalogue
 
 - **GOV.UK search** (`inflation statistics ONS`): large index (70k+ hits); use targeted release URLs for exec headlines.
 - **data.gov.uk** (`consumer price inflation UK`): **35** packages; top hit *Consumer Price Inflation* (ONS).

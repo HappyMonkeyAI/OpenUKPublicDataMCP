@@ -8,7 +8,7 @@ from urllib.parse import quote
 
 from fastmcp import FastMCP
 
-from openukpublicdata_mcp.adapters import ea_flood, ons
+from openukpublicdata_mcp.adapters import ea_flood, ons, planning_data
 from openukpublicdata_mcp.http import get_json, utc_now_iso
 from openukpublicdata_mcp.planning import (
     METHODOLOGY_MD,
@@ -215,6 +215,25 @@ async def get_ons_observations(
     limit = max(1, min(limit, 100))
     data, upstream = await ons.get_observations(dataset_id, edition=edition, version=version, limit=limit)
     return envelope("ons_beta_api", data, upstream=upstream)
+
+
+@mcp.tool
+async def search_planning_applications(
+    reference: str | None = None,
+    dataset: str = "planning-application",
+    limit: int = 10,
+    offset: int = 0,
+) -> dict[str, Any]:
+    """Search England planning applications via planning.data.gov.uk (optional reference filter)."""
+    limit = max(1, min(limit, 50))
+    offset = max(0, offset)
+    data, upstream = await planning_data.search_applications(
+        dataset=dataset,
+        reference=reference,
+        limit=limit,
+        offset=offset,
+    )
+    return envelope("planning_data_gov_uk", data, upstream=upstream)
 
 
 @mcp.tool

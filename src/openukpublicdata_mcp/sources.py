@@ -94,6 +94,17 @@ SOURCES: dict[str, Source] = {
         coverage="ONS datasets, editions, versions, and search",
         licence="Open Government Licence",
     ),
+    "planning_data_gov_uk": Source(
+        id="planning_data_gov_uk",
+        name="Planning Data (planning.data.gov.uk)",
+        base_url="https://www.planning.data.gov.uk",
+        docs_url="https://www.planning.data.gov.uk/docs",
+        official=True,
+        auth="none",
+        coverage="England planning and housing datasets (API)",
+        licence="Open Government Licence",
+        notes="Rate limits may apply; England-focused platform.",
+    ),
     "companies_house": Source(
         id="companies_house",
         name="Companies House API",
