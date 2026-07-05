@@ -76,3 +76,85 @@ async def test_search_govuk_normalizes_results():
     assert result["data"]["total"] == 1
     assert result["data"]["results"][0]["title"] == "Bank holidays"
     assert result["source"]["official"] is True
+
+
+@respx.mock
+async def test_list_flood_warnings():
+    route = respx.get("https://environment.data.gov.uk/flood-monitoring/id/floods").mock(
+        return_value=Response(
+            200,
+            json={
+                "items": [
+                    {
+                        "@id": "http://example/flood/1",
+                        "severity": "Flood warning",
+                        "severityLevel": 2,
+                        "description": "River rising",
+                        "message": "Act now",
+                        "timeRaised": "2026-06-01T12:00:00Z",
+                        "floodArea": {"notation": "0654", "label": "Test River", "county": "Testshire", "riverOrSea": "Test"},
+                    }
+                ],
+                "meta": {"publisher": "EA"},
+            },
+        )
+    )
+    result = await list_flood_warnings(limit=1)
+    assert route.called
+    assert result["data"]["count"] == 1
+    assert result["data"]["warnings"][0]["severity_level"] == 2
+    assert result["source"]["id"] == "ea_flood_monitoring"
+
+
+@respx.mock
+async def test_search_flood_areas():
+    respx.get("https://environment.data.gov.uk/flood-monitoring/id/floodAreas").mock(
+        return_value=Response(
+            200,
+            json={"items": [{"@id": "http://x", "notation": "0654", "label": "Thames", "county": "Oxfordshire"}]},
+        )
+    )
+    result = await search_flood_areas("Thames", limit=1)
+    assert result["data"]["areas"][0]["label"] == "Thames"
+
+
+@respx.mock
+async def test_search_ons_datasets():
+    respx.get("https://api.beta.ons.gov.uk/v1/search").mock(
+        return_value=Response(
+            200,
+            json={
+                "count": 1,
+                "items": [
+                    {
+                        "id": "cpih01",
+                        "title": "CPIH",
+                        "description": "Inflation",
+                        "release_date": "2026-05-01",
+                        "last_updated": "2026-06-01",
+                    }
+                ],
+            },
+        )
+    )
+    result = await search_ons_datasets("inflation", limit=1)
+    assert result["data"]["datasets"][0]["id"] == "cpih01"
+    assert result["source"]["official"] is True
+
+
+@respx.mock
+async def test_get_ons_dataset():
+    respx.get("https://api.beta.ons.gov.uk/v1/datasets/cpih01").mock(
+        return_value=Response(
+            200,
+            json={
+                "id": "cpih01",
+                "title": "CPIH",
+                "release_frequency": "monthly",
+                "last_updated": "2026-06-01",
+                "links": {"editions": {"href": "https://api.beta.ons.gov.uk/v1/datasets/cpih01/editions"}},
+            },
+        )
+    )
+    result = await get_ons_dataset("cpih01")
+    assert result["data"]["release_frequency"] == "monthly"

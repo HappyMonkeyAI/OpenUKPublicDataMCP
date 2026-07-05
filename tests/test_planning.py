@@ -7,8 +7,8 @@ def test_build_research_plan_standard():
     plan = build_research_plan("UK inflation", depth="standard", period="Q2 2026")
     assert plan["topic"] == "UK inflation"
     assert plan["depth"] == "standard"
-    assert len(plan["steps"]) >= 4
-    assert any(s["action"] == "search_govuk" for s in plan["steps"])
+    assert len(plan["steps"]) >= 6
+    assert any(s["action"] == "search_ons_datasets" for s in plan["steps"])
 
 
 def test_format_plan_markdown():
