@@ -3,6 +3,8 @@ from httpx import Response
 
 from openukpublicdata_mcp.server import (
     get_ons_dataset,
+    get_ons_latest_version,
+    get_ons_observations,
     health_check,
     list_flood_warnings,
     list_sources,
@@ -158,3 +160,91 @@ async def test_get_ons_dataset():
     )
     result = await get_ons_dataset("cpih01")
     assert result["data"]["release_frequency"] == "monthly"
+
+
+@respx.mock
+async def test_get_ons_latest_version_resolves_editions_and_versions():
+    respx.get("https://api.beta.ons.gov.uk/v1/datasets/cpih01").mock(
+        return_value=Response(200, json={"id": "cpih01", "title": "CPIH", "description": "Inflation"})
+    )
+    respx.get("https://api.beta.ons.gov.uk/v1/datasets/cpih01/editions").mock(
+        return_value=Response(
+            200,
+            json={
+                "count": 1,
+                "items": [
+                    {
+                        "edition": "time-series",
+                        "links": {"latest_version": {"id": "67"}},
+                    }
+                ],
+            },
+        )
+    )
+    respx.get("https://api.beta.ons.gov.uk/v1/datasets/cpih01/editions/time-series/versions").mock(
+        return_value=Response(
+            200,
+            json={
+                "count": 2,
+                "items": [
+                    {"version": 66, "edition": "time-series", "last_updated": "2026-01-01T00:00:00Z"},
+                    {
+                        "version": 67,
+                        "edition": "time-series",
+                        "last_updated": "2026-02-01T00:00:00Z",
+                        "dimensions": [{"name": "time", "label": "Time", "id": "mmm-yy"}],
+                    },
+                ],
+            },
+        )
+    )
+    result = await get_ons_latest_version("cpih01")
+    assert result["data"]["dataset_id"] == "cpih01"
+    assert result["data"]["edition"] == "time-series"
+    assert result["data"]["version"] == 67
+    assert result["data"]["dimensions"][0]["name"] == "time"
+    assert result["source"]["id"] == "ons_beta_api"
+
+
+@respx.mock
+async def test_get_ons_observations_auto_resolves_latest_and_limits_results():
+    respx.get("https://api.beta.ons.gov.uk/v1/datasets/cpih01").mock(
+        return_value=Response(200, json={"id": "cpih01", "title": "CPIH"})
+    )
+    respx.get("https://api.beta.ons.gov.uk/v1/datasets/cpih01/editions").mock(
+        return_value=Response(
+            200,
+            json={
+                "count": 1,
+                "items": [{"edition": "time-series", "links": {"latest_version": {"id": "67"}}}],
+            },
+        )
+    )
+    respx.get("https://api.beta.ons.gov.uk/v1/datasets/cpih01/editions/time-series/versions").mock(
+        return_value=Response(
+            200,
+            json={"count": 1, "items": [{"version": 67, "edition": "time-series"}]},
+        )
+    )
+    observations_route = respx.get(
+        "https://api.beta.ons.gov.uk/v1/datasets/cpih01/editions/time-series/versions/67/observations",
+        params={"time": "*"},
+    ).mock(
+        return_value=Response(
+            200,
+            json={
+                "count": 2,
+                "items": [
+                    {"observation": "131.4", "dimensions": {"time": {"id": "Feb-26", "label": "Feb 2026"}}},
+                    {"observation": "130.2", "dimensions": {"time": {"id": "Jan-26", "label": "Jan 2026"}}},
+                ],
+            },
+        )
+    )
+    result = await get_ons_observations("cpih01", limit=1)
+    assert observations_route.called
+    assert result["data"]["edition"] == "time-series"
+    assert result["data"]["version"] == 67
+    assert result["data"]["query"] == {"time": "*"}
+    assert result["data"]["count"] == 1
+    assert result["data"]["observations"][0]["observation"] == "131.4"

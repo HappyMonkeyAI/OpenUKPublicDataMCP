@@ -19,6 +19,7 @@ METHODOLOGY_MD = """# UK public data research methodology (OpenUKPublicDataMCP)
 2. `plan_uk_public_data_research` — pick tools for the question.
 3. Discovery: `search_govuk`, `search_public_datasets`, `search_ons_datasets`.
 4. Point lookups: `lookup_postcode`, `get_bank_holidays`, `get_carbon_intensity`, `get_ons_dataset`.
+5. ONS facts: `get_ons_latest_version`, then `get_ons_observations` for time-series values.
 5. Synthesis: combine envelopes; every fact needs `source` + `retrieved_at`.
 
 ## Depth levels
@@ -51,12 +52,18 @@ def build_research_plan(
             [
                 {
                     "step": 5,
+                    "action": "get_ons_observations",
+                    "args": {"dataset_id": "<ONS dataset id from search>", "limit": 20},
+                    "why": "Retrieve source-cited ONS observations from the latest edition/version",
+                },
+                {
+                    "step": 6,
                     "action": "get_carbon_intensity",
                     "args": {},
                     "why": "Live GB grid signal (energy quarter context)",
                 },
                 {
-                    "step": 6,
+                    "step": 7,
                     "action": "lookup_postcode",
                     "args": {"postcode": "SW1A 1AA"},
                     "why": "Smoke-test geodata envelope (optional anchor)",
@@ -67,13 +74,13 @@ def build_research_plan(
         base_steps.extend(
             [
                 {
-                    "step": 7,
+                    "step": 8,
                     "action": "list_flood_warnings",
                     "args": {"limit": 5},
                     "why": "Environmental risk context (England)",
                 },
                 {
-                    "step": 8,
+                    "step": 9,
                     "action": "save_uk_research_note",
                     "args": {"topic": topic, "content_markdown": "<synthesise from tool envelopes>"},
                     "why": "Persist brief under ~/research",

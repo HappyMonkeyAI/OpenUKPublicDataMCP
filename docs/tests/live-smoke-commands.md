@@ -30,6 +30,8 @@ fastmcp call $MCP search_public_datasets query='UK economy quarterly 2026' limit
 ```bash
 fastmcp call $MCP search_ons_datasets query='consumer price inflation' limit=5 --json
 fastmcp call $MCP get_ons_dataset dataset_id='cpih01' --json
+fastmcp call $MCP get_ons_latest_version dataset_id='cpih01' --json
+fastmcp call $MCP get_ons_observations dataset_id='cpih01' limit=20 --json
 ```
 
 ## Flood (post task-002)
