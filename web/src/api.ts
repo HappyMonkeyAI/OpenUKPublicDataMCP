@@ -71,3 +71,13 @@ export function fetchCrimeByPostcode(postcode: string) {
     `/crime/by-postcode/${encodeURIComponent(postcode)}?limit=8`,
   );
 }
+
+export function fetchMpByPostcode(postcode: string) {
+  return getJson<Record<string, unknown>>(`/parliament/mp?postcode=${encodeURIComponent(postcode)}`);
+}
+
+export function fetchWeatherByPostcode(postcode: string) {
+  return getJson<Record<string, unknown>>(
+    `/weather/by-postcode/${encodeURIComponent(postcode)}?resolution=hourly`,
+  );
+}

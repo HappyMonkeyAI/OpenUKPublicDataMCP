@@ -150,6 +150,18 @@ EXPLORER_TOPICS: list[dict[str, Any]] = [
         "tools": ["search_planning_applications"],
     },
     {
+        "id": "weather",
+        "title": "Weather (Met Office)",
+        "summary": "Site-specific hourly/daily forecast at lat/lng (DataHub key)",
+        "tools": ["met_office_site_forecast"],
+    },
+    {
+        "id": "democracy",
+        "title": "Parliament & constituencies",
+        "summary": "MP by postcode, constituency search",
+        "tools": ["search_mp_by_postcode", "search_constituencies"],
+    },
+    {
         "id": "safety",
         "title": "Street crime (England & Wales)",
         "summary": "Police.uk near a lat/lng point",

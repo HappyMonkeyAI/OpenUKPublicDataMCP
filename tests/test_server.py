@@ -14,8 +14,11 @@ from openukpublicdata_mcp.server import (
     police_street_crime_near,
     search_flood_areas,
     search_govuk,
+    search_mp_by_postcode,
     search_ons_datasets,
     search_planning_applications,
+    search_constituencies,
+    met_office_site_forecast,
 )
 
 
@@ -340,3 +343,43 @@ async def test_police_street_crime_near():
     result = await police_street_crime_near(52.6, -1.1, limit=5)
     assert result["data"]["count"] == 1
     assert result["source"]["id"] == "police_uk"
+
+
+@respx.mock
+async def test_search_mp_by_postcode():
+    respx.get("https://members-api.parliament.uk/api/Members/Search").mock(
+        return_value=Response(
+            200,
+            json={
+                "items": [
+                    {
+                        "value": {
+                            "id": 1,
+                            "nameDisplayAs": "Test MP",
+                            "latestParty": {"name": "Independent"},
+                            "latestHouseMembership": {"membershipFrom": "Testshire", "house": 1},
+                        }
+                    }
+                ]
+            },
+        )
+    )
+    result = await search_mp_by_postcode("SW1A 1AA")
+    assert result["data"]["members"][0]["name"] == "Test MP"
+    assert result["source"]["id"] == "parliament_uk"
+
+
+@respx.mock
+async def test_search_constituencies():
+    respx.get("https://members-api.parliament.uk/api/Location/Constituency/Search").mock(
+        return_value=Response(200, json={"items": [{"value": {"id": 99, "name": "Richmond and Northallerton"}}]})
+    )
+    result = await search_constituencies("Richmond", limit=5)
+    assert result["data"]["constituencies"][0]["name"] == "Richmond and Northallerton"
+
+
+async def test_met_office_site_forecast_auth_required(monkeypatch):
+    monkeypatch.delenv("MET_OFFICE_DATAHUB_API_KEY", raising=False)
+    monkeypatch.delenv("MET_OFFICE_API_KEY", raising=False)
+    result = await met_office_site_forecast(51.5, -0.12)
+    assert result["data"]["status"] == "auth_required"

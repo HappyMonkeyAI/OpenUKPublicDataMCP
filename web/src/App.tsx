@@ -9,9 +9,11 @@ import {
   fetchCpih,
   fetchCrimeByPostcode,
   fetchFloods,
+  fetchMpByPostcode,
   fetchPostcode,
   fetchRegions,
   fetchTopics,
+  fetchWeatherByPostcode,
   searchAll,
 } from "./api";
 
@@ -106,6 +108,10 @@ export default function App() {
         bundle.cpih = await fetchCpih();
       } else if (selectedTopic?.id === "safety") {
         bundle.crime = await fetchCrimeByPostcode(region.sample_postcode);
+      } else if (selectedTopic?.id === "democracy") {
+        bundle.mp = await fetchMpByPostcode(region.sample_postcode);
+      } else if (selectedTopic?.id === "weather") {
+        bundle.weather = await fetchWeatherByPostcode(region.sample_postcode);
       }
       setDetail(bundle);
     } catch (err) {

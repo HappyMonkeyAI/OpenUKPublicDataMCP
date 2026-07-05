@@ -8,7 +8,8 @@ from urllib.parse import quote
 
 from fastmcp import FastMCP
 
-from openukpublicdata_mcp.adapters import ea_flood, govuk, ons, planning_data, police_uk
+from openukpublicdata_mcp.adapters import ea_flood, govuk, ons, parliament, planning_data, police_uk
+from openukpublicdata_mcp.providers import met_office
 from openukpublicdata_mcp.geography import list_regions
 from openukpublicdata_mcp.http import get_json, utc_now_iso
 from openukpublicdata_mcp.planning import (
@@ -247,6 +248,32 @@ async def police_street_crime_near(
         limit=limit,
     )
     return envelope("police_uk", data, upstream=upstream)
+
+
+@mcp.tool
+async def search_mp_by_postcode(postcode: str) -> dict[str, Any]:
+    """Find current MPs for a UK postcode (UK Parliament Members API)."""
+    data, upstream = await parliament.search_members_by_postcode(postcode)
+    return envelope("parliament_uk", data, upstream=upstream)
+
+
+@mcp.tool
+async def search_constituencies(search_text: str, limit: int = 10) -> dict[str, Any]:
+    """Search Westminster constituencies by name (UK Parliament API)."""
+    limit = max(1, min(limit, 20))
+    data, upstream = await parliament.search_constituencies(search_text, limit=limit)
+    return envelope("parliament_uk", data, upstream=upstream)
+
+
+@mcp.tool
+async def met_office_site_forecast(
+    latitude: float,
+    longitude: float,
+    resolution: str = "hourly",
+) -> dict[str, Any]:
+    """Met Office Weather DataHub site-specific forecast (optional MET_OFFICE_DATAHUB_API_KEY)."""
+    data, upstream = await met_office.site_forecast(latitude, longitude, resolution=resolution)
+    return envelope("met_office_datahub", data, upstream=upstream)
 
 
 @mcp.tool

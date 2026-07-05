@@ -33,7 +33,7 @@ Add **Ordnance Survey Places** and **TfL Unified API** optional-key providers pe
 ### Do NOT touch
 - `adapters/ons.py`, `server.py` ONS observation tools (codex)
 
-You MAY add new tools to server.py for os/tfl only.
+You MAY add new tools to server.py for os/tfl only **after** codex-lane releases the server.py lock (task-006). If server.py is locked, implement providers + tests first, then append server tool wrappers in a second pass or leave a short `INTEGRATION.md` note listing exact server.py snippets for Hermes to merge.
 
 ### Verification
 ```bash

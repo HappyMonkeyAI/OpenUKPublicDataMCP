@@ -32,7 +32,9 @@ MVP shipped: **23+ MCP tools**, FastAPI explorer API, and **`web/`** React map U
 - `search_planning_applications` — planning.data.gov.uk (England).
 - `get_cpih_inflation_headline` — CPIH month-on-month % from ONS observations.
 - `list_uk_regions` — explorer geography metadata (sample postcodes).
-- `police_street_crime_near` — data.police.uk street crime near lat/lng.
+- `police_street_crime_near` — data.police.uk near lat/lng.
+- `search_mp_by_postcode`, `search_constituencies` — UK Parliament Members API.
+- `met_office_site_forecast` — Met Office DataHub (optional `MET_OFFICE_DATAHUB_API_KEY`).
 - `companies_house_company_profile` — optional `COMPANIES_HOUSE_API_KEY`.
 - `os_places_find_place` — optional `OS_PLACES_API_KEY`.
 - `tfl_line_status` — optional `TFL_APP_ID` + `TFL_APP_KEY`.

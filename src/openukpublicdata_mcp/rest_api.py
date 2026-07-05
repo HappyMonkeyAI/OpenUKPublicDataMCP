@@ -19,8 +19,11 @@ from openukpublicdata_mcp.server import (
     health_check,
     list_flood_warnings,
     lookup_postcode,
+    met_office_site_forecast,
     police_street_crime_near,
+    search_constituencies,
     search_govuk,
+    search_mp_by_postcode,
     search_ons_datasets,
     search_planning_applications,
     search_public_datasets,
@@ -89,8 +92,32 @@ async def api_search(
         try:
             pc = await lookup_postcode(normalised_pc)
             results.append({"kind": "postcode", "title": normalised_pc, "payload": pc})
+            mp = await search_mp_by_postcode(normalised_pc)
+            for m in mp["data"].get("members", [])[:3]:
+                results.append(
+                    {
+                        "kind": "mp",
+                        "title": m.get("name"),
+                        "description": f"{m.get('party')} — {m.get('constituency')}",
+                        "payload": m,
+                    }
+                )
         except Exception as exc:  # noqa: BLE001
             results.append({"kind": "error", "title": "postcode", "detail": str(exc)})
+
+    try:
+        const = await search_constituencies(cleaned, limit=3)
+        for row in const["data"].get("constituencies", [])[:3]:
+            results.append(
+                {
+                    "kind": "constituency",
+                    "title": row.get("name"),
+                    "description": (row.get("current_mp") or {}).get("name"),
+                    "payload": row,
+                }
+            )
+    except Exception:
+        pass
 
     gov = await search_govuk(cleaned, limit=5)
     for row in gov["data"].get("results", [])[:5]:
@@ -184,6 +211,42 @@ async def api_crime_by_postcode(
         raise HTTPException(status_code=422, detail="postcode_missing_coordinates")
     crime = await police_street_crime_near(lat, lng, date=date, limit=limit)
     return {"place": place, "crime": crime}
+
+
+@app.get("/api/parliament/mp")
+async def api_mp_by_postcode(postcode: str = Query(..., min_length=5, max_length=12)) -> dict[str, Any]:
+    return await search_mp_by_postcode(postcode)
+
+
+@app.get("/api/parliament/constituencies")
+async def api_constituencies(
+    q: str = Query(..., min_length=2, max_length=80),
+    limit: int = Query(10, ge=1, le=20),
+) -> dict[str, Any]:
+    return await search_constituencies(q, limit=limit)
+
+
+@app.get("/api/weather/forecast")
+async def api_weather_forecast(
+    lat: float,
+    lng: float,
+    resolution: str = Query("hourly", pattern="^(hourly|daily)$"),
+) -> dict[str, Any]:
+    return await met_office_site_forecast(lat, lng, resolution=resolution)
+
+
+@app.get("/api/weather/by-postcode/{postcode}")
+async def api_weather_by_postcode(
+    postcode: str,
+    resolution: str = Query("hourly", pattern="^(hourly|daily)$"),
+) -> dict[str, Any]:
+    place = await lookup_postcode(postcode)
+    lat = place["data"].get("latitude")
+    lng = place["data"].get("longitude")
+    if lat is None or lng is None:
+        raise HTTPException(status_code=422, detail="postcode_missing_coordinates")
+    wx = await met_office_site_forecast(lat, lng, resolution=resolution)
+    return {"place": place, "forecast": wx}
 
 
 if WEB_DIST.is_dir():

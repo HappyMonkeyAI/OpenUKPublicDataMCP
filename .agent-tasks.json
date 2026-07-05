@@ -344,5 +344,29 @@
       "completed_by": "hermes-lane",
       "verified_by": "hermes-lane"
     }
+  },
+  "task-014-parliament-api": {
+    "id": "task-014-parliament-api",
+    "title": "UK Parliament Members API",
+    "description": "search_mp_by_postcode + search_constituencies",
+    "status": "verified",
+    "verified_at": "2026-07-05T16:06:31.730247+00:00",
+    "commit": "pending"
+  },
+  "task-015-met-office-datahub": {
+    "id": "task-015-met-office-datahub",
+    "title": "Met Office DataHub optional forecast",
+    "description": "met_office_site_forecast + MET_OFFICE_DATAHUB_API_KEY",
+    "status": "verified",
+    "verified_at": "2026-07-05T16:06:31.730247+00:00",
+    "commit": "pending"
+  },
+  "task-016-enrichment-research": {
+    "id": "task-016-enrichment-research",
+    "title": "UK enrichment research note",
+    "description": "Met Office + Parliament deep research plan",
+    "status": "verified",
+    "verified_at": "2026-07-05T16:06:31.730247+00:00",
+    "commit": "pending"
   }
 }
