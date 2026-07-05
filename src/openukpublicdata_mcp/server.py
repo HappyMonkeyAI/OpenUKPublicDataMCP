@@ -8,7 +8,8 @@ from urllib.parse import quote
 
 from fastmcp import FastMCP
 
-from openukpublicdata_mcp.adapters import ea_flood, ons, planning_data
+from openukpublicdata_mcp.adapters import ea_flood, govuk, ons, planning_data, police_uk
+from openukpublicdata_mcp.geography import list_regions
 from openukpublicdata_mcp.http import get_json, utc_now_iso
 from openukpublicdata_mcp.planning import (
     METHODOLOGY_MD,
@@ -114,27 +115,8 @@ async def get_carbon_intensity(region_id: int | None = None) -> dict[str, Any]:
 async def search_govuk(query: str, limit: int = 5) -> dict[str, Any]:
     """Search GOV.UK content."""
     limit = max(1, min(limit, 50))
-    payload = await get_json(
-        "https://www.gov.uk/api/search.json",
-        params={"q": query, "count": limit},
-    )
-    results = []
-    for item in payload.get("results", [])[:limit]:
-        results.append(
-            {
-                "title": item.get("title"),
-                "link": item.get("link"),
-                "description": item.get("description"),
-                "public_timestamp": item.get("public_timestamp"),
-                "content_store_document_type": item.get("content_store_document_type"),
-                "organisations": item.get("organisations"),
-            }
-        )
-    return envelope(
-        "govuk_search",
-        {"query": query, "total": payload.get("total"), "results": results},
-        upstream={"total": payload.get("total")},
-    )
+    data, upstream = await govuk.search(query, limit)
+    return envelope("govuk_search", data, upstream=upstream)
 
 
 @mcp.tool
@@ -234,6 +216,37 @@ async def search_planning_applications(
         offset=offset,
     )
     return envelope("planning_data_gov_uk", data, upstream=upstream)
+
+
+@mcp.tool
+async def get_cpih_inflation_headline(dataset_id: str = "cpih01") -> dict[str, Any]:
+    """Latest CPIH index month-on-month % change from ONS observations (UK aggregate slice)."""
+    data, upstream = await ons.cpih_inflation_headline(dataset_id)
+    return envelope("ons_beta_api", data, upstream=upstream)
+
+
+@mcp.tool
+def list_uk_regions() -> dict[str, Any]:
+    """List UK nations/regions with sample postcodes for explorer map drill-down."""
+    return envelope("postcodes_io", list_regions(), upstream={"kind": "explorer_metadata"})
+
+
+@mcp.tool
+async def police_street_crime_near(
+    latitude: float,
+    longitude: float,
+    date: str | None = None,
+    limit: int = 20,
+) -> dict[str, Any]:
+    """Street-level crime categories near a lat/lng (England and Wales, data.police.uk)."""
+    limit = max(1, min(limit, 50))
+    data, upstream = await police_uk.street_crime_near(
+        latitude,
+        longitude,
+        date=date,
+        limit=limit,
+    )
+    return envelope("police_uk", data, upstream=upstream)
 
 
 @mcp.tool

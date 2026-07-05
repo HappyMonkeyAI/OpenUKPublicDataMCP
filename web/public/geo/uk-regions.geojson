@@ -1,0 +1,198 @@
+{
+  "type": "FeatureCollection",
+  "name": "uk-regions-explorer-points",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "london",
+        "name": "London",
+        "type": "region",
+        "sample_postcode": "SW1A 1AA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.142,
+          51.501
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "north-west",
+        "name": "North West",
+        "type": "region",
+        "sample_postcode": "M1 1AE"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -2.24,
+          53.48
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "north-east",
+        "name": "North East",
+        "type": "region",
+        "sample_postcode": "NE1 4LP"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.61,
+          54.97
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "yorkshire-and-the-humber",
+        "name": "Yorkshire and The Humber",
+        "type": "region",
+        "sample_postcode": "LS1 1UR"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.55,
+          53.8
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "east-midlands",
+        "name": "East Midlands",
+        "type": "region",
+        "sample_postcode": "NG1 1AA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.15,
+          52.95
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "west-midlands",
+        "name": "West Midlands",
+        "type": "region",
+        "sample_postcode": "B1 1TT"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.9,
+          52.48
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "east-of-england",
+        "name": "East of England",
+        "type": "region",
+        "sample_postcode": "CB2 1TN"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.12,
+          52.2
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "south-east",
+        "name": "South East",
+        "type": "region",
+        "sample_postcode": "BN1 1EE"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.14,
+          50.82
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "south-west",
+        "name": "South West",
+        "type": "region",
+        "sample_postcode": "BS1 4ST"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -2.59,
+          51.45
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wales",
+        "name": "Wales",
+        "type": "nation",
+        "sample_postcode": "CF10 1EP"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -3.18,
+          51.48
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "scotland",
+        "name": "Scotland",
+        "type": "nation",
+        "sample_postcode": "EH1 1YZ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -3.19,
+          55.95
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "northern-ireland",
+        "name": "Northern Ireland",
+        "type": "nation",
+        "sample_postcode": "BT1 1AA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -5.93,
+          54.6
+        ]
+      }
+    }
+  ]
+}

@@ -100,7 +100,20 @@ python -m compileall src tests
 fastmcp list src/openukpublicdata_mcp/server.py --json
 ```
 
-Expected: all tests pass; **14 tools** (after this phase).
+Expected: all tests pass; **23+ tools** (MCP) + REST `/api/*` + `web/` explorer.
+
+---
+
+## Phase 5 — Web explorer ✅ (2026-07-05)
+
+| Deliverable | Path |
+|-------------|------|
+| FastAPI bridge | `src/openukpublicdata_mcp/rest_api.py`, `openukpublicdata-web` |
+| React + Leaflet UI | `web/` (search, topics, map drill-down, constituency via postcode) |
+| Run script | `scripts/run-web.sh` |
+| Tests | `tests/test_rest_api.py` |
+
+Tier C (optional v2): EPC register, Met Office, Parliament API, full constituency GeoJSON boundaries.
 
 ---
 
@@ -109,4 +122,4 @@ Expected: all tests pass; **14 tools** (after this phase).
 - Full ONS observations pagination
 - Companies House / OS / TfL implementations (design only in ADR 0002)
 - HTTP multi-tenant deployment
-- 40mcp REST bridge
+- ~~40mcp REST bridge~~ → shipped as `rest_api.py` + `web/`

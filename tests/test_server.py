@@ -2,13 +2,16 @@ import respx
 from httpx import Response
 
 from openukpublicdata_mcp.server import (
+    get_cpih_inflation_headline,
     get_ons_dataset,
     get_ons_latest_version,
     get_ons_observations,
     health_check,
     list_flood_warnings,
     list_sources,
+    list_uk_regions,
     lookup_postcode,
+    police_street_crime_near,
     search_flood_areas,
     search_govuk,
     search_ons_datasets,
@@ -274,3 +277,66 @@ async def test_search_planning_applications_envelope():
     assert result["data"]["applications"][0]["reference"] == "23/00002/FUL"
     assert result["source"]["id"] == "planning_data_gov_uk"
     assert result["retrieved_at"]
+
+
+def test_list_uk_regions_envelope():
+    result = list_uk_regions()
+    assert result["data"]["count"] >= 10
+    assert result["data"]["regions"][0]["sample_postcode"]
+
+
+@respx.mock
+async def test_get_cpih_inflation_headline():
+    respx.get("https://api.beta.ons.gov.uk/v1/datasets/cpih01").mock(
+        return_value=Response(200, json={"id": "cpih01", "title": "CPIH"})
+    )
+    respx.get("https://api.beta.ons.gov.uk/v1/datasets/cpih01/editions").mock(
+        return_value=Response(200, json={"items": [{"edition": "time-series", "links": {"latest_version": {"id": "67"}}}]})
+    )
+    respx.get("https://api.beta.ons.gov.uk/v1/datasets/cpih01/editions/time-series/versions").mock(
+        return_value=Response(200, json={"items": [{"version": 67}]})
+    )
+    respx.get("https://api.beta.ons.gov.uk/v1/datasets/cpih01/editions/time-series/versions/67").mock(
+        return_value=Response(
+            200,
+            json={
+                "version": 67,
+                "dimensions": [
+                    {"name": "time", "label": "Time"},
+                    {"name": "aggregate", "label": "Aggregate"},
+                ],
+            },
+        )
+    )
+    respx.get(
+        "https://api.beta.ons.gov.uk/v1/datasets/cpih01/editions/time-series/versions/67/dimensions/aggregate/options"
+    ).mock(return_value=Response(200, json={"items": [{"option": "cpih1dim1A0"}]}))
+    respx.get(
+        "https://api.beta.ons.gov.uk/v1/datasets/cpih01/editions/time-series/versions/67/observations"
+    ).mock(
+        return_value=Response(
+            200,
+            json={
+                "observations": [
+                    {"observation": "130.0", "dimensions": {"time": {"id": "Dec-25"}}},
+                    {"observation": "131.4", "dimensions": {"time": {"id": "Jan-26"}}},
+                ]
+            },
+        )
+    )
+    result = await get_cpih_inflation_headline("cpih01")
+    assert result["data"]["month_on_month_percent"] is not None
+    assert result["data"]["latest_period"] == "Jan-26"
+
+
+@respx.mock
+async def test_police_street_crime_near():
+    respx.get("https://data.police.uk/api/crimes-street/all-crime").mock(
+        return_value=Response(
+            200,
+            json=[{"category": "violent-crime", "month": "2024-01", "location": {"latitude": "52.6", "longitude": "-1.1"}}],
+        )
+    )
+    result = await police_street_crime_near(52.6, -1.1, limit=5)
+    assert result["data"]["count"] == 1
+    assert result["source"]["id"] == "police_uk"

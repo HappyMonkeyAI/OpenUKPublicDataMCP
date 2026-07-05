@@ -94,6 +94,17 @@ SOURCES: dict[str, Source] = {
         coverage="ONS datasets, editions, versions, and search",
         licence="Open Government Licence",
     ),
+    "police_uk": Source(
+        id="police_uk",
+        name="data.police.uk",
+        base_url="https://data.police.uk/api",
+        docs_url="https://data.police.uk/docs/",
+        official=True,
+        auth="none",
+        coverage="Street-level crime (England and Wales)",
+        licence="Open Government Licence",
+        notes="Location-based; pair with postcodes.io for lat/lng.",
+    ),
     "planning_data_gov_uk": Source(
         id="planning_data_gov_uk",
         name="Planning Data (planning.data.gov.uk)",

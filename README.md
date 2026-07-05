@@ -6,7 +6,7 @@ The goal is to give Claude, Hermes, Cursor, and other MCP clients one reliable e
 
 ## Status
 
-Bootstrap/MVP. The initial implementation exposes a small set of live no-key tools and the repo documentation spine.
+MVP shipped: **23+ MCP tools**, FastAPI explorer API, and **`web/`** React map UI. Tier C backlog (EPC, Met Office, Parliament) remains optional.
 
 ## Principles
 
@@ -30,6 +30,9 @@ Bootstrap/MVP. The initial implementation exposes a small set of live no-key too
 - `list_flood_warnings` / `search_flood_areas` — Environment Agency flood monitoring (England).
 - `search_ons_datasets` / `get_ons_dataset` / `get_ons_latest_version` / `get_ons_observations` — ONS Beta API.
 - `search_planning_applications` — planning.data.gov.uk (England).
+- `get_cpih_inflation_headline` — CPIH month-on-month % from ONS observations.
+- `list_uk_regions` — explorer geography metadata (sample postcodes).
+- `police_street_crime_near` — data.police.uk street crime near lat/lng.
 - `companies_house_company_profile` — optional `COMPANIES_HOUSE_API_KEY`.
 - `os_places_find_place` — optional `OS_PLACES_API_KEY`.
 - `tfl_line_status` — optional `TFL_APP_ID` + `TFL_APP_KEY`.
@@ -67,6 +70,15 @@ hermes config set mcp_servers.openukpublicdata.connect_timeout 60
 ```
 
 Restart Hermes after changing MCP config.
+
+## Web explorer
+
+```bash
+./scripts/run-web.sh
+# http://127.0.0.1:8765
+```
+
+See `web/README.md` for dev mode (Vite + API).
 
 ## Research
 

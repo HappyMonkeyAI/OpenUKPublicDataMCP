@@ -201,3 +201,81 @@ async def get_observations(
         "limit": payload.get("limit"),
     }
     return data, upstream
+
+
+_MONTHS = {
+    "jan": 1,
+    "feb": 2,
+    "mar": 3,
+    "apr": 4,
+    "may": 5,
+    "jun": 6,
+    "jul": 7,
+    "aug": 8,
+    "sep": 9,
+    "oct": 10,
+    "nov": 11,
+    "dec": 12,
+}
+
+
+def _time_sort_key(time_id: str) -> tuple[int, int]:
+    import re
+
+    match = re.match(r"^([A-Za-z]{3})-(\d{2})$", (time_id or "").strip())
+    if not match:
+        return (0, 0)
+    month = _MONTHS.get(match.group(1).lower(), 0)
+    year = 2000 + int(match.group(2))
+    return (year, month)
+
+
+def _extract_time_label(dimensions: dict[str, Any] | None) -> str | None:
+    if not dimensions:
+        return None
+    time_dim = dimensions.get("time") or {}
+    return time_dim.get("id") or time_dim.get("label")
+
+
+async def cpih_inflation_headline(
+    dataset_id: str = "cpih01",
+    *,
+    observation_limit: int = 120,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Compute latest month-on-month % change from CPIH-style index observations."""
+    data, upstream = await get_observations(dataset_id, limit=observation_limit)
+    points: list[tuple[tuple[int, int], float, str]] = []
+    for row in data.get("observations", []):
+        label = _extract_time_label(row.get("dimensions"))
+        raw = row.get("observation")
+        if label is None or raw is None:
+            continue
+        try:
+            value = float(raw)
+        except (TypeError, ValueError):
+            continue
+        points.append((_time_sort_key(label), value, label))
+    points.sort(key=lambda item: item[0])
+    headline: dict[str, Any] = {
+        "dataset_id": dataset_id,
+        "edition": data.get("edition"),
+        "version": data.get("version"),
+        "query": data.get("query"),
+        "note": "Month-on-month % on CPIH index level (not annual CPI rate).",
+    }
+    if len(points) >= 2:
+        (_p1, prev_val, prev_label) = points[-2]
+        (_p2, latest_val, latest_label) = points[-1]
+        mom_pct = ((latest_val - prev_val) / prev_val) * 100 if prev_val else None
+        headline.update(
+            {
+                "latest_period": latest_label,
+                "latest_index": latest_val,
+                "previous_period": prev_label,
+                "previous_index": prev_val,
+                "month_on_month_percent": round(mom_pct, 2) if mom_pct is not None else None,
+            }
+        )
+    else:
+        headline["error"] = "insufficient_observations"
+    return headline, {"observations_upstream": upstream}
