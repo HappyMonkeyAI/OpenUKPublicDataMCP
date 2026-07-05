@@ -12,15 +12,15 @@ Curated from GOV.UK API catalogue (`co-cddo/api-catalogue`), live smoke tests (2
 | GOV.UK bank holidays | `www.gov.uk/bank-holidays.json` | `get_bank_holidays` | Calendar JSON |
 | Carbon Intensity | `api.carbonintensity.org.uk` | `get_carbon_intensity` | GB grid signal |
 | EA flood monitoring | `environment.data.gov.uk/flood-monitoring` | `list_flood_warnings`, `search_flood_areas` | England |
-| ONS Beta API | `api.beta.ons.gov.uk/v1` | `search_ons_datasets`, `get_ons_dataset` | Search + metadata; observations next |
+| ONS Beta API | `api.beta.ons.gov.uk/v1` | `search_ons_datasets`, `get_ons_dataset`, `get_ons_latest_version`, `get_ons_observations` | Search, metadata, observations |
 
 ## Tier B — Optional key (registry + partial tools)
 
 | Source | Env | MCP status |
 |--------|-----|------------|
 | Companies House | `COMPANIES_HOUSE_API_KEY` | `companies_house_company_profile` (auth_required without key) |
-| Ordnance Survey Places | `OS_PLACES_API_KEY` | Registry only |
-| TfL Unified | `TFL_APP_ID`, `TFL_APP_KEY` | Registry only |
+| Ordnance Survey Places | `OS_PLACES_API_KEY` | `os_places_find_place` |
+| TfL Unified | `TFL_APP_ID`, `TFL_APP_KEY` | `tfl_line_status` |
 
 ## Tier C — High value backlog (no-key or key TBC)
 
