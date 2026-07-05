@@ -5,7 +5,7 @@ Run from repo root with venv active:
 ```bash
 cd /home/stephen/projects/OpenUKPublicDataMCP
 . .venv/bin/activate
-MCP=src/openukpublicdata_mcp/server.py:mcp
+MCP=src/openukpublicdata_mcp/server.py
 ```
 
 ## Health & planning
