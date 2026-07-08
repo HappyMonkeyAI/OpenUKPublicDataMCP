@@ -154,19 +154,26 @@ def list_tasks(args: list[str]) -> None:
         print(f"\n{emoji} {status.upper()} ({len(items)})")
         print("-" * 80)
         for t in items:
-            agent = t["assigned_to"] or "unassigned"
-            files = ", ".join(t["files"]) if t["files"] else "none"
+            agent = t.get("assigned_to") or "unassigned"
+            files_list = t.get("files")
+            files = ", ".join(files_list) if files_list else "none"
             prov = t.get("provenance", "")
             prov_label = f" [{prov}]" if prov else ""
-            print(f"  {t['id']}: {t['title']}{prov_label}")
+            print(f"  {t['id']}: {t.get('title', 'Untitled')}{prov_label}")
             print(f"    Agent: {agent}")
             print(f"    Files: {files}")
-            if t["tags"]:
-                print(f"    Tags: {', '.join(t['tags'])}")
-            if t["description"]:
-                print(f"    Desc: {t['description'][:100]}")
-            if t["notes"]:
-                print(f"    Last note: {t['notes'][-1]['text'][:80]}")
+            tags = t.get("tags")
+            if tags:
+                print(f"    Tags: {', '.join(tags)}")
+            desc = t.get("description")
+            if desc:
+                print(f"    Desc: {desc[:100]}")
+            notes = t.get("notes")
+            if notes:
+                if isinstance(notes, list):
+                    print(f"    Last note: {notes[-1]['text'][:80]}")
+                else:
+                    print(f"    Last note: {notes[:80]}")
 
     print()
     print("=" * 80)
